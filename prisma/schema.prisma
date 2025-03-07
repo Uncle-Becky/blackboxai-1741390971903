@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AIModel {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  category    String
+  type        String
+  version     String
+  performance Float
+  latency     Float
+  accuracy    Float
+  pricing     Json
+  features    String[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deployments Deployment[]
+
+  @@map("ai_models")
+}
+
+model Deployment {
+  id        String   @id @default(cuid())
+  modelId   String
+  userId    String
+  orgId     String?
+  status    String
+  config    Json
+  metrics   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  model     AIModel  @relation(fields: [modelId], references: [id])
+
+  @@map("deployments")
+}
